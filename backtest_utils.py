@@ -1,9 +1,9 @@
 import warnings
 
+import cvxpy as cp
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from scipy.optimize import minimize
 
 warnings.filterwarnings("ignore")
 
@@ -20,25 +20,34 @@ class Markowitz:
         self.lambda_aversion = risk_aversion
         self.n_assets = len(expected_returns)
 
+    @staticmethod
+    def _make_psd(matrix: np.ndarray, epsilon: float = 1e-8) -> np.ndarray:
+        symmetric = (matrix + matrix.T) / 2
+        min_eig = np.min(np.linalg.eigvalsh(symmetric))
+        if min_eig < epsilon:
+            symmetric = symmetric + np.eye(symmetric.shape[0]) * (epsilon - min_eig)
+        return symmetric
+
     def optimize(self, allow_shorting: bool = False) -> np.ndarray:
-        def objective(weights: np.ndarray) -> float:
-            portfolio_return = -np.dot(weights, self.mu)
-            portfolio_variance = np.dot(weights, np.dot(self.sigma, weights))
-            return portfolio_return + self.lambda_aversion * portfolio_variance / 2
+        sigma_psd = self._make_psd(self.sigma)
+        weights = cp.Variable(self.n_assets)
+        portfolio_return = self.mu @ weights
+        portfolio_variance = cp.quad_form(weights, sigma_psd)
 
-        constraints = [{"type": "eq", "fun": lambda weights: np.sum(weights) - 1}]
-        bounds = [(None, None)] * self.n_assets if allow_shorting else [(0, 1)] * self.n_assets
-        x0 = np.full(self.n_assets, 1.0 / self.n_assets)
-
-        result = minimize(
-            objective,
-            x0,
-            method="SLSQP",
-            bounds=bounds,
-            constraints=constraints,
-            options={"maxiter": 1000},
+        objective = cp.Maximize(
+            portfolio_return - self.lambda_aversion * portfolio_variance / 2
         )
-        return result.x
+        constraints = [cp.sum(weights) == 1]
+        if not allow_shorting:
+            constraints.extend([weights >= 0, weights <= 1])
+
+        problem = cp.Problem(objective, constraints)
+        problem.solve(solver=cp.SCS, verbose=False)
+
+        if weights.value is None:
+            raise ValueError("cvxpy failed to solve the Markowitz optimization problem.")
+
+        return np.asarray(weights.value).reshape(-1)
 
 
 class BlackLitterman:
