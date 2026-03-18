@@ -2,6 +2,8 @@
 
 Robust Extensions and Data-Driven Calibration for Modern Portfolios.
 
+![Black Litterman Model](image.png)
+
 ## Environment Setup
 
 This repository includes a reproducible Conda environment file:
