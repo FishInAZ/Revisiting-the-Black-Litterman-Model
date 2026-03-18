@@ -1,0 +1,7 @@
+,BL Sample Covariance,BL Shrinkage Covariance,BL L2-Regularized Covariance
+Annual Return,0.199599,0.282008,0.283808
+Annual Volatility,0.417303,0.396212,0.407447
+Sharpe Ratio,0.430381,0.661282,0.647466
+Max Drawdown,-0.752846,-0.688454,-0.688453
+Turnover,0.647899,0.718323,0.671632
+VaR(95%),-0.039781,-0.03678,-0.037642
