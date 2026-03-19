@@ -1,0 +1,8 @@
+,Equal Weight (1/N),BL Sample Covariance,BL Shrinkage Covariance,BL L2-Regularized Covariance
+Annualized Return,0.178243,0.192385,0.221156,0.161659
+Sharpe Ratio,1.068119,1.118618,1.20934,1.085727
+Information Ratio,,0.294288,0.621326,-0.449111
+Maximum Drawdown,-0.202877,-0.26963,-0.268454,-0.203521
+Annualized Volatility,0.166876,0.171984,0.182873,0.148894
+Value at Risk (95%),-0.072918,-0.065812,-0.065821,-0.052496
+Annualized Turnover,0.0,1.66509,1.634596,0.203583
